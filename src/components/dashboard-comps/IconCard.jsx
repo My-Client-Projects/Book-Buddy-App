@@ -1,29 +1,62 @@
 import React from "react";
 
-const IconCard = ({ icon, title, item1, item2, item3 }) => {
-  const color = title === "Security Risks" ? "bg-[#323042]" : "bg-mainColor";
+const IconCard = ({ 
+  coverImage, 
+  title, 
+  author, 
+  year, 
+  description, 
+  editionCount,
+  ebookAccess 
+}) => {
   return (
-    <div
-      className={`info-card w-[24%] text-white ${color} rounded-[10px] p-5 max-[1000px]:w-[250px] hover:translate-y-[-2px] transition-[0.6s] `}>
-      <h2 className="flex justify-start gap-3 text-[17px] pb-5">
-        <i className={`bi ${icon}`}></i>
-        {title}
-      </h2>
-      <div className="card-stats flex justify-between">
-        <div className=" card-stat  flex flex-col flex-1 align-top">
-          <span className="font-bold text-[15px]">{item1}</span>
-          <span className="text-[12px]">{item2}</span>
-        </div>
-        {title === "Security Risks" ? (
-          <div className="card-stat flex items-center p-2 font-semibold text-[#02F646]">
-            {item3}
-          </div>
+    <div className="info-card w-[24%] bg-white rounded-[10px] p-5 max-[1000px]:w-[250px] hover:translate-y-[-2px] transition-[0.6s] shadow-md hover:shadow-lg">
+      <div className="flex gap-4">
+        {coverImage ? (
+          <img 
+            src={coverImage} 
+            alt={`Cover of ${title}`} 
+            className="w-24 h-36 object-contain rounded"
+          />
         ) : (
-          <div className="card-stat flex items-center p-2 relative border-[6px] border-solid border-[#FFFDF4]/[.4] rounded-[50%]">
-            {item3}
+          <div className="w-24 h-36 bg-gray-100 flex items-center justify-center rounded">
+            <i className="bi bi-book text-3xl text-gray-400"></i>
           </div>
         )}
+        
+        <div className="flex-1">
+          <h2 className="text-lg font-semibold line-clamp-2">
+            {title}
+          </h2>
+          
+          <p className="text-sm text-gray-600 mt-1">
+            <span className="font-medium">By:</span> {author}
+          </p>
+          
+          <p className="text-sm text-gray-600">
+            <span className="font-medium">Published:</span> {year}
+          </p>
+          
+          {editionCount && (
+            <p className="text-xs text-gray-500 mt-1">
+              {editionCount} edition{editionCount !== 1 ? 's' : ''}
+            </p>
+          )}
+          
+          {ebookAccess && (
+            <p className="text-xs mt-1">
+              <span className={`px-2 py-1 rounded ${
+                ebookAccess === 'borrowable' ? 
+                  'bg-green-100 text-green-800' : 
+                  'bg-gray-100 text-gray-800'
+              }`}>
+                {ebookAccess === 'borrowable' ? 'Ebook available' : 'No ebook'}
+              </span>
+            </p>
+          )}
+        </div>
       </div>
+    
     </div>
   );
 };
