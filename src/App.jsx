@@ -1,10 +1,8 @@
-import { Route, Routes } from "react-router-dom";
+import { Navigate, Route, Routes } from "react-router-dom";
 import NavBar from "./components/navbar/NavBar";
-import { reservationData } from "./data";
-import { useState } from "react";
-import Booking from "./pages/Booking";
-import Rooms from "./pages/Rooms";
-import Home from "./pages/dashboard/hOME";
+import Home from "./pages/Home";
+import ReadingList from "./pages/ReadingList";
+import BookDetail from "./pages/BookDetail";
 
 function App() {
   
@@ -12,9 +10,10 @@ function App() {
     <main className="grid justify-end max-[920px]:flex max-[920px]:flex-col max-[920px]:items-center">
       <NavBar />
       <Routes>
-        <Route path="/home" element={<Home/>} />
-        <Route path="/add-book" element={<Booking />} />
-        <Route path="/books" element={<Rooms />} />
+        <Route path="/" element={<Navigate to="/home" replace />} />
+        <Route path="/home" element={<Home />} />
+        <Route path="/reading-list" element={<ReadingList />} />
+        <Route path="/book/:id" element={<BookDetail />} />
       </Routes>
     </main>
   );

@@ -1,14 +1,42 @@
-import { useRef, useEffect } from "react";
-import { useState } from "react";
+import { useRef, useEffect, useState } from "react";
 import NavBarLink from "./NavBarLink";
-import { Link, useLocation, useNavigate } from "react-router-dom";
-import useOutsideClick from "../../hooks/useOutsideClick";
+import { useLocation, useNavigate } from "react-router-dom";
 
 const NavBar = () => {
   const [linkNumber, setLinkNumber] = useState(1);
   const [toggle, setToggle] = useState(false);
   const listIcon = useRef();
   const navRef = useRef(null);
+
+  function useOutsideClick(ref, isActive, menuRef) {
+
+    const [isOutsideClick, setIsOutsideClick] = useState(false);
+
+    useEffect(() => {
+        function handleClickOutside(event) {
+          if (
+            ref.current &&
+            !ref.current.contains(event.target) &&
+            !menuRef.current.contains(event.target)
+          ) {
+            setIsOutsideClick(true);
+          } else {
+            setIsOutsideClick(false);
+          }
+        }
+        // Only add the event listener if `isActive` is true
+        if (isActive) {
+          document.addEventListener("mousedown", handleClickOutside);
+        }
+
+        return () => {
+          setIsOutsideClick(false);
+          document.removeEventListener("mousedown", handleClickOutside);
+        };
+      }, [ref, isActive]);
+
+      return isOutsideClick;
+  }
 
   const navOutsideClick = useOutsideClick(navRef, toggle, listIcon);
 
@@ -35,20 +63,14 @@ const NavBar = () => {
     },
     {
       id: 2,
-      title: "Add Book",
-      image: "bi-plus-circle",
-    },
-    {
-      id: 3,
-      title: "Books",
+      title: "Reading List",
       image: "bi-book",
     },
   ];
 
   const navigationList = {
     "/home": 1,
-    "add-book": 2,
-    "books": 3,
+    "reading-list": 2
   };
 
   const currentPage = useLocation().pathname.split("/")[1];
@@ -64,6 +86,7 @@ const NavBar = () => {
   }, [currentPage]);
 
   const location = useLocation();
+  
   useEffect(() => {
     setToggle(false);
   }, [location]);
