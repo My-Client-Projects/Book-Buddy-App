@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 
-const BookCard = ({ id, coverImage, title, author, year, editionCount, ebookAccess }) => {
+const BookCard = ({ id, coverImage, title, author, year, editionCount, ebookAccess, isbn }) => {
 
   const handleAddToReadingList = () => {
     const newBook = {
@@ -8,6 +8,7 @@ const BookCard = ({ id, coverImage, title, author, year, editionCount, ebookAcce
       title: title || "Untitled",
       author: author || "Unknown Author",
       year: year || "Unknown Year",
+      isbn: isbn || "Unknown ISBN"
     };
 
     const savedList = JSON.parse(localStorage.getItem("readingList")) || [];

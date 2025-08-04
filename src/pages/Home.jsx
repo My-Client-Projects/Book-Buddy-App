@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import BookCard from "../components/BookCard";
 import { useSearch } from "../context/SearchContext";
 import AddBook from "../components/AddBook";
@@ -8,8 +8,8 @@ const Home = () => {
   const { query, setQuery, results, setResults } = useSearch();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
-  const [readingList, setReadingList] = useState([]);
   const [showForm, setShowForm] = useState(false);
+  const [editingBook, setEditingBook] = useState(null);
 
   const handleSearch = async () => {
     if (!query.trim()) {
@@ -34,6 +34,7 @@ const Home = () => {
           coverId: book.cover_i,
           editionCount: book.edition_count,
           ebookAccess: book.ebook_access,
+          isbn: "Unknown ISBN"
         }));
         setResults(formattedResults);
       } else {
@@ -47,20 +48,41 @@ const Home = () => {
   };
 
   const handleAddBook = (book) => {
-    setReadingList((prev) => [...prev, book]);
-    setShowForm(false);
+
+    if(!book?.title || !book?.author || !book?.year || !book?.isbn){
+      alert("All fields required !!!");
+      return 0
+    }
+    try {
+
+      const newBook = {
+        id: crypto.randomUUID(),
+        title: book?.title || "Untitled",
+        author: book?.author || "Unknown Author",
+        year: book?.year || "Unknown Year",
+        isbn: book?.isbn || "Unknown ISBN"
+      };
+
+      const savedList = JSON.parse(localStorage.getItem("readingList")) || [];
+      const isAlreadyAdded = savedList.some((b) => b.title === newBook.title);
+
+      if (!isAlreadyAdded) {
+        savedList.push(newBook);
+        localStorage.setItem("readingList", JSON.stringify(savedList));
+        alert("Book added to your reading list!");
+      } else {
+        alert("This book is already in your reading list.");
+      }
+
+      setShowForm(false);
+      
+    } catch (error) {
+      alert("Failed to add book !!!!");
+      console.error(error)
+    }
+    
   };
 
-  useEffect(() => {
-    const savedList = localStorage.getItem("readingList");
-    if (savedList) {
-      setReadingList(JSON.parse(savedList));
-    }
-  }, []);
-
-  useEffect(() => {
-    localStorage.setItem("readingList", JSON.stringify(readingList));
-  }, [readingList]);
 
   return (
     <div className="dashboard pt-10 px-5 flex flex-1 flex-col w-[83vw] justify-between gap-[20px] max-[920px]:w-[90%]">
@@ -98,7 +120,20 @@ const Home = () => {
         {showForm ? "Close Form" : "Add Book"}
       </button>
 
-      {showForm && <AddBook onAdd={handleAddBook} />}
+      {showForm && 
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+        <div className="bg-white rounded-lg p-6 w-full max-w-md">
+          <AddBook 
+            onAdd={handleAddBook} 
+            initialData={editingBook}
+            onClose={() => {
+              setShowForm(false);
+              setEditingBook(null);
+            }}
+          />
+        </div>
+        </div>
+      }
 
       {loading && (
         <div className="flex justify-center items-center py-10">
@@ -139,6 +174,7 @@ const Home = () => {
                   year={book.year}
                   editionCount={book.editionCount}
                   ebookAccess={book.ebookAccess}
+                  isbn={book.isbn || "Unknown ISBN"}
                 />
               ))}
             </div>
